@@ -1,21 +1,1856 @@
-RANVAR (RANJUT VARISHIT - FISH FINDER) 0.01V - INI GAMENYA
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RANVAR 0.01V — Ranjut Varishit Fish Finder 🐟</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <style>
+        :root {
+            --bg: #f0f9ff;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #475569;
+            --accent: #0ea5e9;
+            --accent-light: #7dd3fc;
+            --border: #e0f2fe;
+            --shadow: 0 8px 32px rgba(14, 165, 233, 0.12);
+            --timer-color: #16a34a;
+            --glow: 0 0 20px rgba(14, 165, 233, 0.3);
+            --font-body: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --scanline-opacity: 0;
+            --glitch-intensity: 0;
+            --bubble-opacity: 1;
+        }
 
-IKAN NORMAL (EASY - NORMAL MODE)
-IKAN ANOMALI (ANOMALI MODE)
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.6s ease, color 0.6s ease;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-GAME FOOD CHAIN.
+        body.anomaly-active {
+            --bg: #050510;
+            --card-bg: #0a0a1a;
+            --text: #c8d6e5;
+            --text-secondary: #6b7f99;
+            --accent: #1a3a5c;
+            --accent-light: #2a5a8c;
+            --border: #1a1a3a;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --timer-color: #ef4444;
+            --glow: 0 0 20px rgba(30, 60, 120, 0.5);
+            --scanline-opacity: 0.35;
+            --glitch-intensity: 1;
+            --bubble-opacity: 0;
+            background: #050510;
+            font-family: var(--font-mono);
+        }
 
-AI GENERATE GAME :
+        .scanlines-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: var(--scanline-opacity);
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.15) 2px,
+                    rgba(0, 0, 0, 0.15) 4px);
+            transition: opacity 0.6s ease;
+        }
 
-DESC :  THIS FISH WAS BLA BLA BLA BLA 
-	CLUE : 
-	WEIGHT :
-	COLOR : --
-	ANY OF INFORMATION
+        .glitch-text {
+            display: inline-block;
+            position: relative;
+            animation: glitch-skew 4s infinite;
+        }
 
-PG : WHAT IS THE NAME OF THE FISH
+        @keyframes glitch-skew {
+            0%,
+            92%,
+            100% {
+                transform: skewX(0deg);
+                text-shadow: 0 0 10px rgba(30, 60, 120, 0.3);
+            }
+            93% {
+                transform: skewX(2deg);
+                text-shadow: 2px 0 0 #ff0040, -2px 0 0 #00e5ff;
+            }
+            94% {
+                transform: skewX(-2deg);
+                text-shadow: -2px 0 0 #ff0040, 2px 0 0 #00e5ff;
+            }
+            95% {
+                transform: skewX(0deg);
+                text-shadow: 0 0 10px rgba(30, 60, 120, 0.3);
+            }
+            96% {
+                transform: skewX(1deg);
+                text-shadow: 1px 0 0 #ff0040, -1px 0 0 #00e5ff;
+            }
+            97% {
+                transform: skewX(-1deg);
+                text-shadow: -1px 0 0 #ff0040, 1px 0 0 #00e5ff;
+            }
+        }
 
-APLIKASINYA :
+        .bubble-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: var(--bubble-opacity);
+            transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            animation: rise linear infinite;
+            pointer-events: none;
+        }
+        @keyframes rise {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-110vh) scale(1.3);
+                opacity: 0;
+            }
+        }
 
-PAGE : HTML, CSS, JS, TAILWIND, GROQ AI
-COLOR THEME : BLUE BLACK BULLSHIT SCARY FOR THE "ANOMALI FISH MODE" AND SOME KIDDY AS FUCK LIKE PLAYGROUND FOR THE EASY NORMAL MODE
+        .fish-emoji-display {
+            font-size: 6rem;
+            line-height: 1;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            filter: drop-shadow(0 8px 16px rgba(14, 165, 233, 0.25));
+        }
+        .anomaly-active .fish-emoji-display {
+            filter: drop-shadow(0 0 20px rgba(255, 0, 64, 0.5));
+            animation: emoji-flicker 2s infinite;
+        }
+        @keyframes emoji-flicker {
+            0%,
+            85%,
+            100% {
+                opacity: 1;
+            }
+            86% {
+                opacity: 0.4;
+            }
+            87% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            91% {
+                opacity: 1;
+            }
+        }
+
+        .score-pop {
+            animation: scorePop 0.5s ease-out;
+        }
+        @keyframes scorePop {
+            0% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .streak-fire {
+            animation: streakPulse 0.8s ease-in-out infinite;
+        }
+        @keyframes streakPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        .wrong-shake {
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            15% {
+                transform: translateX(-10px);
+            }
+            30% {
+                transform: translateX(10px);
+            }
+            45% {
+                transform: translateX(-6px);
+            }
+            60% {
+                transform: translateX(6px);
+            }
+            75% {
+                transform: translateX(-3px);
+            }
+        }
+
+        .fish-reveal {
+            animation: fishReveal 0.6s ease-out;
+        }
+        @keyframes fishReveal {
+            0% {
+                transform: translateY(20px) scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .ai-thinking {
+            animation: aiPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes aiPulse {
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .food-chain-arrow {
+            font-size: 1.5rem;
+            color: var(--accent);
+            transition: color 0.4s;
+        }
+        .anomaly-active .food-chain-arrow {
+            color: #3a5a8c;
+        }
+
+        .card-glow {
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        .anomaly-active .card-glow {
+            border-color: #1a3a5c !important;
+        }
+
+        .mode-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.45);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
+        }
+
+        .anomaly-active .btn-primary {
+            background: linear-gradient(135deg, #1a1a3a, #2a1a4a);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            border: 1px solid #3a3a6a;
+        }
+        .anomaly-active .btn-primary:hover {
+            box-shadow: 0 8px 24px rgba(60, 30, 100, 0.5);
+            border-color: #4a4a8a;
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .focus-visible-ring:focus-visible {
+            outline: 3px solid #0ea5e9;
+            outline-offset: 2px;
+            border-radius: 8px;
+        }
+        .anomaly-active .focus-visible-ring:focus-visible {
+            outline-color: #3a5a8c;
+        }
+
+        .timer-low {
+            color: #ef4444 !important;
+            animation: timerPulse 0.5s ease-in-out infinite;
+        }
+        @keyframes timerPulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .timer-medium {
+            color: #eab308 !important;
+        }
+        .timer-normal {
+            color: #16a34a !important;
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .anomaly-warning {
+            animation: warningBlink 1.2s ease-in-out infinite;
+        }
+        @keyframes warningBlink {
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .corrupted-field {
+            background: #1a1a1a !important;
+            color: #0a0a0a !important;
+            text-shadow: 0 0 8px #333 !important;
+            letter-spacing: 2px;
+        }
+
+        .food-chain-card {
+            transition: all 0.4s ease;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+        }
+        .anomaly-active .food-chain-card {
+            border-color: #2a2a5a;
+            background: #0d0d1a;
+        }
+
+        .hidden-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .hidden-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--accent-light);
+            border-radius: 4px;
+        }
+
+        @media (max-width: 640px) {
+            .fish-emoji-display {
+                font-size: 4rem;
+            }
+            .food-chain-arrow {
+                font-size: 1rem;
+            }
+            .bubble {
+                display: none;
+            }
+        }
+
+        .ai-generating {
+            background: linear-gradient(90deg, transparent, var(--accent-light), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .specimen-label {
+            letter-spacing: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="transition-colors duration-500">
+
+    <div class="bubble-container" id="bubbleContainer" aria-hidden="true"></div>
+    <div class="scanlines-overlay" id="scanlinesOverlay" aria-hidden="true"></div>
+
+    <!-- API SETUP MODAL -->
+    <div id="apiModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-overlay" role="dialog" aria-modal="true" aria-labelledby="apiModalTitle">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto mode-transition" id="apiModalCard">
+            <h2 id="apiModalTitle" class="text-2xl font-bold mb-3 text-slate-800 dark:text-white">🐟 RANVAR AI SETUP</h2>
+            <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Enter your Groq API key to enable AI-generated fish. The game works with a local database even without a key.</p>
+            <label for="groqApiKeyInput" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Groq API Key</label>
+            <input type="password" id="groqApiKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false"
+            class="w-full px-4 py-3 border-2 border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all mb-3 focus-visible-ring"
+            aria-label="Groq API Key input">
+            <p class="text-xs text-amber-600 dark:text-amber-400 mb-4">⚠️ For production, API calls should go through a backend because browser-side API keys are not secure.</p>
+            <div class="flex flex-wrap gap-3">
+                <button id="saveApiKeyBtn" class="btn-primary px-6 py-3 rounded-xl font-semibold focus-visible-ring">💾 SAVE API KEY</button>
+                <button id="cancelApiKeyBtn" class="btn-secondary px-6 py-3 rounded-xl font-semibold focus-visible-ring">CANCEL</button>
+                <button id="clearApiKeyBtn" class="text-sm text-red-500 hover:text-red-700 dark:text-red-400 underline px-2 py-2 focus-visible-ring">Clear API Key</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="relative z-10 px-4 pt-6 pb-3 max-w-7xl mx-auto">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight glitch-text" id="mainTitle">
+                    <span class="text-cyan-500">RAN</span><span class="text-blue-600">VAR</span>
+                </h1>
+                <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full font-bold" id="versionBadge">0.01V</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <span class="font-semibold">Ranjut × Varishit</span>
+                <span class="hidden sm:inline">—</span>
+                <span class="hidden sm:inline">Fish Finder</span>
+                <button id="apiSettingsBtn" class="ml-3 text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-3 py-1.5 rounded-lg transition-all focus-visible-ring" aria-label="Open API settings">⚙️ API</button>
+            </div>
+        </div>
+        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-2" id="tagline">Find the Fish. Break the Chain.</p>
+        <p id="aiStatusBadge" class="text-xs mt-1 inline-block px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"></p>
+    </header>
+
+    <!-- MODE SELECTOR -->
+    <nav class="relative z-10 px-4 py-3 max-w-7xl mx-auto" aria-label="Game mode selector">
+        <div class="flex flex-wrap gap-3" role="tablist">
+            <button id="normalModeBtn" role="tab" aria-selected="true" aria-label="Normal Fish Mode"
+            class="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 focus-visible-ring
+            bg-gradient-to-r from-cyan-400 to-sky-500 text-white shadow-lg shadow-cyan-200/50 hover:scale-105">
+            🌈 NORMAL FISH
+        </button>
+        <button id="anomalyModeBtn" role="tab" aria-selected="false" aria-label="Anomaly Fish Mode"
+        class="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 focus-visible-ring
+        bg-gradient-to-r from-slate-700 to-slate-900 text-slate-300 hover:scale-105 border border-slate-600">
+        ☠️ ANOMALI FISH
+    </button>
+</div>
+</nav>
+
+<!-- STATS BAR -->
+<section class="relative z-10 px-4 py-2 max-w-7xl mx-auto" aria-label="Game statistics">
+    <div class="grid grid-cols-4 gap-2 md:gap-4">
+        <div class="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 text-center card-glow">
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Score</div>
+            <div class="text-2xl md:text-3xl font-bold text-blue-600 dark:text-cyan-400" id="scoreDisplay">0</div>
+        </div>
+        <div class="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 text-center card-glow">
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Streak</div>
+            <div class="text-2xl md:text-3xl font-bold text-orange-500" id="streakDisplay">0</div>
+        </div>
+        <div class="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 text-center card-glow">
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Round</div>
+            <div class="text-2xl md:text-3xl font-bold text-green-600" id="roundDisplay">1</div>
+        </div>
+        <div class="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 text-center card-glow">
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Time</div>
+            <div class="text-2xl md:text-3xl font-bold" id="timerDisplay">45</div>
+        </div>
+    </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<main class="relative z-10 px-4 py-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- GAME CARD -->
+        <div class="lg:col-span-2 space-y-4">
+            <div id="gameCard" class="bg-white dark:bg-slate-800 rounded-2xl p-5 md:p-7 card-glow mode-transition border-2">
+                <div id="aiGeneratingOverlay" class="hidden mb-4 p-4 rounded-xl ai-generating text-center font-semibold text-blue-700 dark:text-cyan-300">
+                    🤖 AI THINKING... GENERATING FISH REPORT...
+                </div>
+
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-700 dark:text-slate-200" id="reportTitle">🐟 AI FISH REPORT</h2>
+                    <span id="specimenBadge" class="hidden text-xs px-3 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 specimen-label"></span>
+                </div>
+
+                <div class="flex flex-col items-center mb-5" id="fishEmojiContainer">
+                    <span class="fish-emoji-display" id="fishEmoji" role="img" aria-label="Fish emoji">🐠</span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5" id="fishInfoGrid">
+                    <div class="bg-cyan-50 dark:bg-slate-700/50 rounded-xl p-3 text-center">
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase mb-1">⚖️ Weight</div>
+                        <div class="text-sm font-semibold text-slate-700 dark:text-slate-200" id="fishWeight">—</div>
+                    </div>
+                    <div class="bg-sky-50 dark:bg-slate-700/50 rounded-xl p-3 text-center">
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase mb-1">🎨 Color</div>
+                        <div class="text-sm font-semibold text-slate-700 dark:text-slate-200" id="fishColor">—</div>
+                    </div>
+                    <div class="bg-teal-50 dark:bg-slate-700/50 rounded-xl p-3 text-center">
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase mb-1">🏝️ Habitat</div>
+                        <div class="text-sm font-semibold text-slate-700 dark:text-slate-200" id="fishHabitat">—</div>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">📋 Description</h3>
+                    <p class="text-sm md:text-base text-slate-700 dark:text-slate-200 leading-relaxed" id="fishDescription">Loading...</p>
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">🔍 Clues</h3>
+                    <div id="cluesContainer" class="space-y-2"></div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <button id="revealClueBtn" class="btn-secondary px-5 py-2.5 rounded-xl font-semibold text-sm focus-visible-ring" aria-label="Reveal another clue">💡 REVEAL CLUE</button>
+                    <button id="aiExplainBtn" class="btn-secondary px-5 py-2.5 rounded-xl font-semibold text-sm focus-visible-ring hidden" aria-label="AI explanation">🤖 AI EXPLAIN</button>
+                </div>
+
+                <div class="mb-4" id="answerSection">
+                    <label for="answerInput" class="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-1">What is the name of the fish?</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="answerInput" placeholder="Type fish name..." autocomplete="off" spellcheck="false"
+                        class="flex-1 px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all text-base focus-visible-ring"
+                        aria-label="Fish name input">
+                        <button id="guessBtn" class="btn-primary px-6 py-3 rounded-xl font-bold text-base focus-visible-ring">GUESS →</button>
+                    </div>
+                </div>
+
+                <div id="feedbackArea" class="mb-3 hidden"></div>
+
+                <div class="flex justify-end">
+                    <button id="nextFishBtn" class="btn-primary px-6 py-3 rounded-xl font-bold text-base hidden focus-visible-ring">NEXT FISH →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <aside class="space-y-4" aria-label="Sidebar information">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 card-glow mode-transition border">
+                <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">📖 HOW TO PLAY</h3>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc list-inside">
+                    <li>Read the fish report and clues</li>
+                    <li>Guess the fish name correctly</li>
+                    <li>More clues = less points</li>
+                    <li>Faster answers = bonus points</li>
+                    <li>Streaks multiply your score</li>
+                </ul>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 card-glow mode-transition border">
+                <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">📏 RULEBOOK</h3>
+                <ul class="space-y-2 text-xs md:text-sm text-slate-600 dark:text-slate-300">
+                    <li>🌊 Normal: 45s, base 100 pts</li>
+                    <li>☠️ Anomaly: 30s, base 175 pts</li>
+                    <li>⏱️ Time bonus: +2 pts/sec remaining</li>
+                    <li>💡 2nd clue: -15 pts, 3rd clue: -30 pts</li>
+                    <li>🔥 Streak multiplier: up to x2.5</li>
+                </ul>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 card-glow mode-transition border">
+                <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">🏆 LOCAL PROGRESS</h3>
+                <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="bg-amber-50 dark:bg-slate-700/50 rounded-lg p-3">
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Best Score</div>
+                        <div class="text-xl font-bold text-amber-600" id="bestScoreDisplay">0</div>
+                    </div>
+                    <div class="bg-orange-50 dark:bg-slate-700/50 rounded-lg p-3">
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Best Streak</div>
+                        <div class="text-xl font-bold text-orange-600" id="bestStreakDisplay">0</div>
+                    </div>
+                    <div class="bg-green-50 dark:bg-slate-700/50 rounded-lg p-3 col-span-2">
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold">🐟 Fish Discovered</div>
+                        <div class="text-xl font-bold text-green-600" id="fishDiscoveredCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</main>
+
+<footer class="relative z-10 px-4 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+    <p>RANVAR 0.01V — Created by Ranjut &amp; Varishit</p>
+    <p class="mt-1">🔒 For production, API calls should go through a backend. Browser-side keys are not secure.</p>
+</footer>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ==================== CONSTANTS ====================
+        const GROQ_MODEL = "openai/gpt-oss-120b";
+        const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+        const API_TIMEOUT_MS = 15000;
+        const MAX_CLUES = 3;
+        const NORMAL_TIMER_SECONDS = 45;
+        const ANOMALY_TIMER_SECONDS = 30;
+        const NORMAL_BASE_SCORE = 100;
+        const ANOMALY_BASE_SCORE = 175;
+        const TIME_BONUS_PER_SECOND = 2;
+        const SECOND_CLUE_PENALTY = 15;
+        const THIRD_CLUE_PENALTY = 30;
+        const STREAK_MULTIPLIERS = { 1: 1, 2: 1.2, 3: 1.5, 4: 2, 5: 2.5 };
+        const MAX_STREAK_FOR_MULTIPLIER = 5;
+        const RECENT_FISH_HISTORY_SIZE = 6;
+
+        // ==================== LOCAL FISH DATABASE ====================
+        const localFishDatabase = [{
+            name: "Clownfish",
+            emoji: "🐠",
+            weight: "0.1–0.25 kg",
+            color: "Orange and white",
+            habitat: "Coral reefs",
+            food_chain: "Algae → Clownfish → Reef Predator",
+            description: "A small tropical reef fish famous for living among sea anemones. It has a mutualistic relationship with its host anemone.",
+            clues: [
+                "Lives around sea anemones for protection.",
+                "Has bright orange and white bands.",
+                "Famous from animated movies about the ocean."
+            ]
+        }, {
+            name: "Blue Tang",
+            emoji: "🐟",
+            weight: "0.5–1 kg",
+            color: "Vibrant blue with yellow tail",
+            habitat: "Indo-Pacific coral reefs",
+            food_chain: "Algae → Blue Tang → Barracuda",
+            description: "A surgeonfish with a striking royal blue body and yellow tail fin. Popular in marine aquariums and known from animation.",
+            clues: [
+                "Also called the palette surgeonfish.",
+                "Has a bright yellow tail fin.",
+                "Known for a blue body with black markings."
+            ]
+        }, {
+            name: "Lionfish",
+            emoji: "🦁",
+            weight: "0.5–1.5 kg",
+            color: "Red, white, and brown stripes",
+            habitat: "Indo-Pacific reefs and rocky areas",
+            food_chain: "Small Fish → Lionfish → Large Predator",
+            description: "A venomous fish with dramatic striped patterns and long, flowing fins. Its spines deliver a painful sting.",
+            clues: [
+                "Has venomous spines for defense.",
+                "Shows bold red and white stripes.",
+                "Named after a big cat due to its mane-like fins."
+            ]
+        }, {
+            name: "Pufferfish",
+            emoji: "🐡",
+            weight: "0.2–1 kg",
+            color: "Olive, brown, or spotted",
+            habitat: "Tropical and subtropical waters",
+            food_chain: "Invertebrates → Pufferfish → Shark",
+            description: "A fish that can inflate its body into a ball when threatened. Its internal organs contain a powerful toxin.",
+            clues: [
+                "Can inflate itself into a spiky ball.",
+                "Contains tetrodotoxin, a deadly poison.",
+                "Also called blowfish."
+            ]
+        }, {
+            name: "Seahorse",
+            emoji: "🐴",
+            weight: "0.001–0.05 kg",
+            color: "Yellow, orange, brown, or black",
+            habitat: "Shallow coastal waters and seagrass beds",
+            food_chain: "Plankton → Seahorse → Crab",
+            description: "A unique fish with a horse-like head, prehensile tail, and upright swimming posture. Males carry the eggs.",
+            clues: [
+                "Males carry eggs in a pouch.",
+                "Swims upright with a curled tail.",
+                "Has a head shaped like a chess piece."
+            ]
+        }, {
+            name: "Goldfish",
+            emoji: "🔶",
+            weight: "0.1–0.5 kg",
+            color: "Golden, orange, or white",
+            habitat: "Freshwater ponds and aquariums",
+            food_chain: "Plants → Goldfish → Heron",
+            description: "A domesticated freshwater fish descended from the Prussian carp. One of the most popular aquarium fish in the world.",
+            clues: [
+                "Often kept as a pet in bowls or ponds.",
+                "Comes in golden and orange varieties.",
+                "A symbol of luck in some Asian cultures."
+            ]
+        }, {
+            name: "Betta",
+            emoji: "🌺",
+            weight: "0.005–0.01 kg",
+            color: "Red, blue, purple, or multicolored",
+            habitat: "Rice paddies and slow streams of Southeast Asia",
+            food_chain: "Insects → Betta → Bird",
+            description: "Also called Siamese fighting fish. Males are territorial and display large, flowing fins.",
+            clues: [
+                "Also known as the Siamese fighting fish.",
+                "Males have spectacular flowing fins.",
+                "Can breathe air using a labyrinth organ."
+            ]
+        }, {
+            name: "Guppy",
+            emoji: "✨",
+            weight: "0.001–0.003 kg",
+            color: "Highly variable, often colorful",
+            habitat: "Freshwater streams in South America",
+            food_chain: "Mosquito Larvae → Guppy → Larger Fish",
+            description: "A small, hardy livebearer popular in aquariums. Males are much more colorful than females.",
+            clues: [
+                "A popular beginner aquarium fish.",
+                "Males are more colorful than females.",
+                "Gives birth to live young instead of eggs."
+            ]
+        }, {
+            name: "Angelfish",
+            emoji: "👼",
+            weight: "0.05–0.1 kg",
+            color: "Silver with black stripes",
+            habitat: "Amazon River basin",
+            food_chain: "Small Fish → Angelfish → Caiman",
+            description: "A cichlid with a distinctive triangular shape and trailing fins. Popular in freshwater aquariums worldwide.",
+            clues: [
+                "Has a triangular body shape.",
+                "Named for its wing-like fins.",
+                "A type of cichlid from South America."
+            ]
+        }, {
+            name: "Swordfish",
+            emoji: "⚔️",
+            weight: "50–450 kg",
+            color: "Dark blue on top, silver below",
+            habitat: "Open ocean worldwide",
+            food_chain: "Squid → Swordfish → Killer Whale",
+            description: "A large predatory fish with a long, flat bill resembling a sword. One of the fastest fish in the ocean.",
+            clues: [
+                "Has a long, flat bill like a weapon.",
+                "Can swim at speeds over 80 km/h.",
+                "Named after a bladed weapon."
+            ]
+        }, {
+            name: "Tuna",
+            emoji: "🐟",
+            weight: "20–680 kg",
+            color: "Metallic blue to dark gray",
+            habitat: "Open ocean, temperate and tropical waters",
+            food_chain: "Sardines → Tuna → Shark",
+            description: "A large, fast-swimming predatory fish. Highly prized for its meat and known for its incredible endurance.",
+            clues: [
+                "One of the most commercially important fish.",
+                "Can maintain body temperature above water temperature.",
+                "Often eaten as sashimi or sushi."
+            ]
+        }, {
+            name: "Salmon",
+            emoji: "🐟",
+            weight: "2–15 kg",
+            color: "Silver in ocean, red in spawning",
+            habitat: "Cold freshwater and ocean",
+            food_chain: "Plankton → Salmon → Bear",
+            description: "An anadromous fish that migrates from ocean to freshwater rivers to spawn. Famous for its incredible upstream journey.",
+            clues: [
+                "Swims upstream to spawn.",
+                "Changes color during breeding season.",
+                "A major food source for bears and humans."
+            ]
+        }, {
+            name: "Catfish",
+            emoji: "🐱",
+            weight: "0.5–50 kg",
+            color: "Olive, brown, or black",
+            habitat: "Freshwater rivers and lakes worldwide",
+            food_chain: "Detritus → Catfish → Heron",
+            description: "A bottom-dwelling fish named for its whisker-like barbels that resemble a cat's whiskers. Excellent sense of touch and taste.",
+            clues: [
+                "Has whisker-like barbels around its mouth.",
+                "Named after a common household pet.",
+                "Primarily bottom-dwelling."
+            ]
+        }, {
+            name: "Koi",
+            emoji: "🎏",
+            weight: "0.5–8 kg",
+            color: "White, red, orange, black, or blue",
+            habitat: "Ornamental ponds",
+            food_chain: "Plants → Koi → Raccoon",
+            description: "A domesticated carp selectively bred for vibrant colors. Often kept in ornamental ponds and garden water features.",
+            clues: [
+                "A colorful carp often kept in garden ponds.",
+                "Symbol of strength and perseverance in Japan.",
+                "Can grow quite large, over 90 cm."
+            ]
+        }, {
+            name: "Barracuda",
+            emoji: "🔪",
+            weight: "2–50 kg",
+            color: "Silver with dark spots or stripes",
+            habitat: "Tropical and subtropical oceans",
+            food_chain: "Small Fish → Barracuda → Shark",
+            description: "A fierce predatory fish with a torpedo-shaped body and prominent teeth. Known for its speed and aggressive hunting style.",
+            clues: [
+                "Has a torpedo-shaped body and sharp teeth.",
+                "Known for rapid bursts of speed.",
+                "Sometimes follows divers out of curiosity."
+            ]
+        }, {
+            name: "Mackerel",
+            emoji: "🐟",
+            weight: "0.3–1.5 kg",
+            color: "Iridescent blue-green with silver belly",
+            habitat: "Coastal waters in temperate regions",
+            food_chain: "Plankton → Mackerel → Tuna",
+            description: "A fast-swimming schooling fish with striking blue-green patterns on its back. Important commercial fish species.",
+            clues: [
+                "Swims in large schools near the surface.",
+                "Has iridescent blue-green markings.",
+                "Often smoked or grilled."
+            ]
+        }, {
+            name: "Flying Fish",
+            emoji: "🪽",
+            weight: "0.1–1 kg",
+            color: "Blue-silver with transparent fins",
+            habitat: "Open ocean, tropical and subtropical",
+            food_chain: "Plankton → Flying Fish → Dolphin",
+            description: "A fish that can leap out of the water and glide through the air using specially adapted fins to escape predators.",
+            clues: [
+                "Can glide above the water's surface.",
+                "Uses wing-like fins to escape predators.",
+                "Known for spectacular aerial displays."
+            ]
+        }, {
+            name: "Moray Eel",
+            emoji: "🐍",
+            weight: "1–30 kg",
+            color: "Green, brown, or patterned",
+            habitat: "Rocky reef crevices and caves",
+            food_chain: "Small Fish → Moray Eel → Grouper",
+            description: "A long, snake-like fish that lives in reef crevices. Has a second set of jaws in its throat to help swallow prey.",
+            clues: [
+                "Has a snake-like body and lives in crevices.",
+                "Possesses a second set of jaws in its throat.",
+                "Often seen with its mouth open, breathing."
+            ]
+        }, {
+            name: "Grouper",
+            emoji: "🐟",
+            weight: "2–400 kg",
+            color: "Olive, brown, or patterned",
+            habitat: "Rocky reefs and shipwrecks",
+            food_chain: "Small Fish → Grouper → Shark",
+            description: "A large, stocky reef fish that can grow to enormous sizes. Some species can live for over 50 years.",
+            clues: [
+                "A large reef fish with a stocky body.",
+                "Can grow to over 2 meters in length.",
+                "Ambushes prey from rocky crevices."
+            ]
+        }, {
+            name: "Butterflyfish",
+            emoji: "🦋",
+            weight: "0.05–0.3 kg",
+            color: "Yellow, white, black, and orange",
+            habitat: "Tropical coral reefs",
+            food_chain: "Coral Polyps → Butterflyfish → Moray Eel",
+            description: "A colorful reef fish with a disk-shaped body and often a false eyespot to confuse predators. Named for its butterfly-like appearance.",
+            clues: [
+                "Has a disk-shaped, colorful body.",
+                "Often displays a false eyespot near the tail.",
+                "Named after a flying insect."
+            ]
+        }, {
+            name: "Manta Ray",
+            emoji: "🦇",
+            weight: "400–1,400 kg",
+            color: "Black or dark gray on top, white below",
+            habitat: "Tropical and subtropical open ocean",
+            food_chain: "Plankton → Manta Ray → Large Shark",
+            description: "The largest species of ray, with a wingspan up to 7 meters. A gentle filter-feeder that gracefully glides through the ocean.",
+            clues: [
+                "Has the largest brain-to-body ratio of any fish.",
+                "Filters plankton from the water using gill plates.",
+                "Named for its cloak-like shape."
+            ]
+        }, {
+            name: "Anglerfish",
+            emoji: "🔦",
+            weight: "0.5–50 kg",
+            color: "Dark brown to black",
+            habitat: "Deep ocean, up to 1,000+ meters",
+            food_chain: "Small Fish → Anglerfish → Nothing (apex in deep)",
+            description: "A deep-sea predator with a glowing lure on its head to attract prey. Famous for its bioluminescence and fearsome appearance.",
+            clues: [
+                "Uses a glowing lure to attract prey.",
+                "Lives in the deep ocean where sunlight never reaches.",
+                "Females are much larger than males."
+            ]
+        }, {
+            name: "Coelacanth",
+            emoji: "🦕",
+            weight: "30–80 kg",
+            color: "Steel blue with white spots",
+            habitat: "Deep ocean caves off East Africa",
+            food_chain: "Small Fish → Coelacanth → Large Shark",
+            description: "An ancient fish once thought extinct for 66 million years until rediscovered in 1938. Called a 'living fossil.'",
+            clues: [
+                "Thought extinct for millions of years before rediscovery.",
+                "Called a 'living fossil.'",
+                "Has lobed fins unlike most modern fish."
+            ]
+        }, {
+            name: "Oarfish",
+            emoji: "🐉",
+            weight: "Up to 270 kg",
+            color: "Silver with red crest",
+            habitat: "Deep ocean, 200–1,000 meters",
+            food_chain: "Plankton → Oarfish → Deep-sea Shark",
+            description: "The longest bony fish in the world, growing up to 11 meters. Rarely seen and often associated with sea serpent legends.",
+            clues: [
+                "The longest bony fish in the world.",
+                "Rarely seen alive and linked to sea legends.",
+                "Has a distinctive red dorsal fin running the length of its body."
+            ]
+        }];
+
+        // ==================== GAME STATE ====================
+        const gameState = {
+            mode: "normal",
+            score: 0,
+            streak: 0,
+            round: 1,
+            timer: NORMAL_TIMER_SECONDS,
+            currentFish: null,
+            cluesRevealed: 1,
+            timerInterval: null,
+            isAnswerLocked: false,
+            fishHistory: [],
+            discoveredFish: [],
+            isAiGenerating: false,
+            anomalyEventActive: false,
+            anomalyEventTimeout: null,
+        };
+
+        // ==================== DOM REFERENCES ====================
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        const body = document.body;
+        const mainTitle = $('#mainTitle');
+        const tagline = $('#tagline');
+        const aiStatusBadge = $('#aiStatusBadge');
+        const normalModeBtn = $('#normalModeBtn');
+        const anomalyModeBtn = $('#anomalyModeBtn');
+        const scoreDisplay = $('#scoreDisplay');
+        const streakDisplay = $('#streakDisplay');
+        const roundDisplay = $('#roundDisplay');
+        const timerDisplay = $('#timerDisplay');
+        const gameCard = $('#gameCard');
+        const reportTitle = $('#reportTitle');
+        const specimenBadge = $('#specimenBadge');
+        const fishEmoji = $('#fishEmoji');
+        const fishWeight = $('#fishWeight');
+        const fishColor = $('#fishColor');
+        const fishHabitat = $('#fishHabitat');
+        const fishDescription = $('#fishDescription');
+        const cluesContainer = $('#cluesContainer');
+        const revealClueBtn = $('#revealClueBtn');
+        const aiExplainBtn = $('#aiExplainBtn');
+        const answerInput = $('#answerInput');
+        const guessBtn = $('#guessBtn');
+        const nextFishBtn = $('#nextFishBtn');
+        const feedbackArea = $('#feedbackArea');
+        const aiGeneratingOverlay = $('#aiGeneratingOverlay');
+        const fishEmojiContainer = $('#fishEmojiContainer');
+        const fishInfoGrid = $('#fishInfoGrid');
+        const bubbleContainer = $('#bubbleContainer');
+        const scanlinesOverlay = $('#scanlinesOverlay');
+        const apiModal = $('#apiModal');
+        const apiModalCard = $('#apiModalCard');
+        const groqApiKeyInput = $('#groqApiKeyInput');
+        const saveApiKeyBtn = $('#saveApiKeyBtn');
+        const cancelApiKeyBtn = $('#cancelApiKeyBtn');
+        const clearApiKeyBtn = $('#clearApiKeyBtn');
+        const apiSettingsBtn = $('#apiSettingsBtn');
+        const bestScoreDisplay = $('#bestScoreDisplay');
+        const bestStreakDisplay = $('#bestStreakDisplay');
+        const fishDiscoveredCount = $('#fishDiscoveredCount');
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function getApiKey() {
+            return localStorage.getItem('ranvar_groq_key') || '';
+        }
+
+        function setApiKey(key) {
+            localStorage.setItem('ranvar_groq_key', key.trim());
+        }
+
+        function clearApiKey() {
+            localStorage.removeItem('ranvar_groq_key');
+        }
+
+        function getBestScore() {
+            return parseInt(localStorage.getItem('ranvar_best_score') || '0', 10);
+        }
+
+        function setBestScore(val) {
+            localStorage.setItem('ranvar_best_score', String(val));
+        }
+
+        function getBestStreak() {
+            return parseInt(localStorage.getItem('ranvar_best_streak') || '0', 10);
+        }
+
+        function setBestStreak(val) {
+            localStorage.setItem('ranvar_best_streak', String(val));
+        }
+
+        function getDiscoveredFish() {
+            try {
+                return JSON.parse(localStorage.getItem('ranvar_discovered_fish') || '[]');
+            } catch { return []; }
+        }
+
+        function setDiscoveredFish(arr) {
+            localStorage.setItem('ranvar_discovered_fish', JSON.stringify(arr));
+        }
+
+        function addDiscoveredFish(name) {
+            const discovered = getDiscoveredFish();
+            if (!discovered.includes(name)) {
+                discovered.push(name);
+                setDiscoveredFish(discovered);
+            }
+            gameState.discoveredFish = discovered;
+            updateSidebar();
+        }
+
+        function getStoredMode() {
+            return localStorage.getItem('ranvar_mode') || 'normal';
+        }
+
+        function setStoredMode(mode) {
+            localStorage.setItem('ranvar_mode', mode);
+        }
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getStreakMultiplier(streak) {
+            if (streak >= 5) return STREAK_MULTIPLIERS[5];
+            return STREAK_MULTIPLIERS[streak] || 1;
+        }
+
+        function clamp(val, min, max) {
+            return Math.max(min, Math.min(max, val));
+        }
+
+        function formatTime(seconds) {
+            return String(Math.max(0, seconds));
+        }
+
+        function extractJsonFromResponse(text) {
+            if (!text) return null;
+            let cleaned = text.trim();
+            if (cleaned.startsWith('```')) {
+                const match = cleaned.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
+                if (match) cleaned = match[1].trim();
+                else cleaned = cleaned.replace(/```json?/g, '').replace(/```/g, '').trim();
+            }
+            const jsonStart = cleaned.indexOf('{');
+            const jsonEnd = cleaned.lastIndexOf('}');
+            if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+                cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+            }
+            try {
+                return JSON.parse(cleaned);
+            } catch {
+                return null;
+            }
+        }
+
+        function isValidFishData(data) {
+            if (!data || typeof data !== 'object') return false;
+            const requiredFields = ['name', 'emoji', 'weight', 'color', 'habitat', 'food_chain', 'description', 'clues'];
+            for (const field of requiredFields) {
+                if (!data[field] || (field === 'clues' && !Array.isArray(data[field]) && data[field].length < 1)) {
+                    return false;
+                }
+            }
+            if (typeof data.clues === 'string') {
+                try {
+                    data.clues = JSON.parse(data.clues);
+                } catch { return false; }
+            }
+            if (!Array.isArray(data.clues) || data.clues.length < 1) return false;
+            return true;
+        }
+
+        function normalizeFishData(data) {
+            return {
+                name: String(data.name || 'Unknown Fish').trim(),
+                emoji: String(data.emoji || '🐟').trim(),
+                weight: String(data.weight || 'Unknown').trim(),
+                color: String(data.color || 'Unknown').trim(),
+                habitat: String(data.habitat || 'Unknown').trim(),
+                food_chain: String(data.food_chain || 'Unknown').trim(),
+                description: String(data.description || 'No description available.').trim(),
+                clues: Array.isArray(data.clues) ? data.clues.slice(0, MAX_CLUES).map(c => String(c).trim()) : ['No clueavailable.'],
+            };
+        }
+
+        function getRecentFishNames() {
+            return gameState.fishHistory;
+        }
+
+        function pickRandomLocalFish() {
+            const recentNames = getRecentFishNames();
+            const available = localFishDatabase.filter(f => !recentNames.includes(f.name));
+            const pool = available.length > 0 ? available : localFishDatabase;
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            return normalizeFishData(pool[randomIndex]);
+        }
+
+        function pushToFishHistory(name) {
+            gameState.fishHistory.push(name);
+            if (gameState.fishHistory.length > RECENT_FISH_HISTORY_SIZE) {
+                gameState.fishHistory.shift();
+            }
+        }
+
+        // ==================== BUBBLES (NORMAL MODE DECORATION) ====================
+        function createBubbles() {
+            bubbleContainer.innerHTML = '';
+            const bubbleCount = window.innerWidth < 640 ? 12 : 25;
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 35 + 10;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = (Math.random() * 100) + '%';
+                bubble.style.animationDuration = (Math.random() * 12 + 6) + 's';
+                bubble.style.animationDelay = (Math.random() * 8) + 's';
+                bubble.style.opacity = (Math.random() * 0.4 + 0.2).toFixed(2);
+                bubbleContainer.appendChild(bubble);
+            }
+        }
+
+        // ==================== ANOMALY EVENTS ====================
+        const anomalyEvents = [
+            { label: 'WARNING: SPECIMEN MOVEMENT DETECTED', duration: 2500, emoji: '👁️', field: null },
+            { label: 'SIGNAL UNSTABLE — RECALIBRATING', duration: 2000, emoji: '📡', field: null },
+            { label: 'DATA PARTIALLY CORRUPTED', duration: 2200, emoji: '⚠️', field: 'description' },
+            { label: 'CLASSIFICATION ERROR — RETRYING', duration: 1800, emoji: '❌', field: null },
+            { label: 'BIOLOGICAL RECORD INCOMPLETE', duration: 2400, emoji: '📋', field: 'food_chain' },
+        ];
+
+        function triggerAnomalyEvent() {
+            if (gameState.mode !== 'anomaly' || gameState.isAnswerLocked) return;
+            if (gameState.anomalyEventActive) return;
+            const event = anomalyEvents[Math.floor(Math.random() * anomalyEvents.length)];
+            gameState.anomalyEventActive = true;
+            const originalEmoji = gameState.currentFish?.emoji || '🐟';
+            const targetField = event.field;
+
+            if (event.emoji === '👁️') {
+                fishEmoji.textContent = '👁️';
+            }
+            specimenBadge.textContent = '⚠️ ' + event.label;
+            specimenBadge.classList.remove('hidden');
+            specimenBadge.classList.add('anomaly-warning');
+
+            gameState.anomalyEventTimeout = setTimeout(() => {
+                if (event.emoji === '👁️') {
+                    fishEmoji.textContent = originalEmoji;
+                }
+                if (targetField) {
+                    const fieldMap = {
+                        description: fishDescription,
+                    };
+                    const targetEl = fieldMap[targetField];
+                    if (targetEl) {
+                        const orig = targetEl.getAttribute('data-original');
+                        if (orig) targetEl.textContent = orig;
+                        targetEl.classList.remove('corrupted-field');
+                    }
+                }
+                specimenBadge.classList.add('hidden');
+                specimenBadge.classList.remove('anomaly-warning');
+                gameState.anomalyEventActive = false;
+                gameState.anomalyEventTimeout = null;
+            }, event.duration);
+        }
+
+        function scheduleAnomalyEvent() {
+            if (gameState.mode !== 'anomaly') return;
+            const delay = Math.random() * 10000 + 5000;
+            setTimeout(() => {
+                if (gameState.mode === 'anomaly' && !gameState.isAnswerLocked) {
+                    triggerAnomalyEvent();
+                }
+                scheduleAnomalyEvent();
+            }, delay);
+        }
+
+        // ==================== TIMER ====================
+        function startTimer() {
+            stopTimer();
+            const totalSeconds = gameState.mode === 'normal' ? NORMAL_TIMER_SECONDS : ANOMALY_TIMER_SECONDS;
+            gameState.timer = totalSeconds;
+            updateTimerDisplay();
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer--;
+                updateTimerDisplay();
+                if (gameState.timer <= 0) {
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(gameState.timer);
+            timerDisplay.classList.remove('timer-low', 'timer-medium', 'timer-normal');
+            if (gameState.timer <= 10) {
+                timerDisplay.classList.add('timer-low');
+            } else if (gameState.timer <= 20) {
+                timerDisplay.classList.add('timer-medium');
+            } else {
+                timerDisplay.classList.add('timer-normal');
+            }
+        }
+
+        function handleTimeout() {
+            stopTimer();
+            if (gameState.isAnswerLocked) return;
+            gameState.isAnswerLocked = true;
+            gameState.streak = 0;
+            updateStreakDisplay();
+            showFeedback('⏰ TIME OUT! The answer was: ' + gameState.currentFish.name, 'timeout');
+            revealAnswer();
+            nextFishBtn.classList.remove('hidden');
+            guessBtn.disabled = true;
+            answerInput.disabled = true;
+            revealClueBtn.disabled = true;
+            aiExplainBtn.classList.remove('hidden');
+        }
+
+        function revealAnswer() {
+            fishEmoji.textContent = gameState.currentFish.emoji;
+            const answerDisplay = document.createElement('div');
+            answerDisplay.className = 'text-center text-2xl font-bold mt-2 text-slate-700 dark:text-slate-200';
+            answerDisplay.id = 'revealedAnswer';
+            answerDisplay.innerHTML = '🐟 <span class="text-blue-600 dark:text-cyan-400">' + gameState.currentFish
+                .name + '</span>';
+            const old = $('#revealedAnswer');
+            if (old) old.remove();
+            feedbackArea.appendChild(answerDisplay);
+        }
+
+        // ==================== SCORE SYSTEM ====================
+        function calculateScore(timeRemaining, cluesRevealed) {
+            const base = gameState.mode === 'normal' ? NORMAL_BASE_SCORE : ANOMALY_BASE_SCORE;
+            const timeBonus = timeRemaining * TIME_BONUS_PER_SECOND;
+            let hintPenalty = 0;
+            if (cluesRevealed >= 3) hintPenalty = THIRD_CLUE_PENALTY;
+            else if (cluesRevealed >= 2) hintPenalty = SECOND_CLUE_PENALTY;
+            const multiplier = getStreakMultiplier(gameState.streak);
+            const raw = base + timeBonus - hintPenalty;
+            const total = Math.max(0, Math.round(raw * multiplier));
+            return { base, timeBonus, hintPenalty, multiplier, total, raw };
+        }
+
+        function updateScoreDisplay(animate) {
+            scoreDisplay.textContent = gameState.score;
+            if (animate) {
+                scoreDisplay.classList.add('score-pop');
+                setTimeout(() => scoreDisplay.classList.remove('score-pop'), 500);
+            }
+        }
+
+        function updateStreakDisplay(animate) {
+            streakDisplay.textContent = gameState.streak;
+            if (gameState.streak >= 3) {
+                streakDisplay.classList.add('streak-fire');
+            } else {
+                streakDisplay.classList.remove('streak-fire');
+            }
+            if (animate && gameState.streak > 0) {
+                streakDisplay.classList.add('score-pop');
+                setTimeout(() => streakDisplay.classList.remove('score-pop'), 500);
+            }
+        }
+
+        function updateRoundDisplay() {
+            roundDisplay.textContent = gameState.round;
+        }
+
+        function updateSidebar() {
+            bestScoreDisplay.textContent = getBestScore();
+            bestStreakDisplay.textContent = getBestStreak();
+            fishDiscoveredCount.textContent = gameState.discoveredFish.length;
+        }
+
+        function checkBestScore() {
+            const best = getBestScore();
+            if (gameState.score > best) {
+                setBestScore(gameState.score);
+            }
+        }
+
+        function checkBestStreak() {
+            const best = getBestStreak();
+            if (gameState.streak > best) {
+                setBestStreak(gameState.streak);
+            }
+        }
+
+        function getComboMessage(streak) {
+            if (streak >= 10) return '🌊 OCEAN MIND!';
+            if (streak >= 5) return '🐟 FISH MASTER!';
+            if (streak >= 3) return '🎣 TRIPLE CATCH!';
+            return '';
+        }
+
+        // ==================== FEEDBACK SYSTEM ====================
+        function showFeedback(message, type) {
+            feedbackArea.classList.remove('hidden');
+            feedbackArea.innerHTML = '';
+            const fb = document.createElement('div');
+            fb.className = 'p-4 rounded-xl font-semibold text-center text-base mb-2';
+            if (type === 'correct') {
+                fb.classList.add('bg-green-100', 'text-green-800', 'dark:bg-green-900/40', 'dark:text-green-200');
+                const comboMsg = getComboMessage(gameState.streak);
+                if (comboMsg) {
+                    fb.innerHTML = '✅ ' + message + '<br><span class="text-lg font-extrabold text-orange-600 dark:text-orange-300">' +
+                        comboMsg + '</span>';
+                } else {
+                    fb.textContent = '✅ ' + message;
+                }
+            } else if (type === 'wrong') {
+                fb.classList.add('bg-red-100', 'text-red-800', 'dark:bg-red-900/40', 'dark:text-red-200');
+                const wrongMessages = gameState.mode === 'anomaly' ?
+                    ['SPECIMEN DENIED.', 'THE DATABASE DISAGREES.', 'YOUR ANSWER WAS RECORDED.'] :
+                    ['That fish swam away 💀', 'Bro identified the wrong species.', 'Marine biology has filed a complaint.'];
+                const wm = wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
+                fb.innerHTML = '❌ ' + message + '<br><span class="text-sm font-medium">' + wm + '</span>';
+            } else if (type === 'timeout') {
+                fb.classList.add('bg-amber-100', 'text-amber-800', 'dark:bg-amber-900/40', 'dark:text-amber-200');
+                fb.textContent = message;
+            } else if (type === 'info') {
+                fb.classList.add('bg-blue-100', 'text-blue-800', 'dark:bg-blue-900/40', 'dark:text-blue-200');
+                fb.textContent = message;
+            }
+            feedbackArea.appendChild(fb);
+        }
+
+        function showCorrectMessage() {
+            const msg = gameState.mode === 'anomaly' ? 'IDENTIFICATION ACCEPTED.' : 'CAUGHT IT! 🎣';
+            showFeedback(msg, 'correct');
+        }
+
+        function showWrongMessage() {
+            const msg = gameState.mode === 'anomaly' ? 'INCORRECT IDENTIFICATION.' : 'WRONG! The fish was ' +
+                gameState.currentFish.name;
+            showFeedback(msg, 'wrong');
+        }
+
+        // ==================== RENDER FUNCTIONS ====================
+        function renderFish(fish) {
+            gameState.currentFish = fish;
+            fishEmoji.textContent = fish.emoji;
+            fishWeight.textContent = fish.weight;
+            fishColor.textContent = fish.color;
+            fishHabitat.textContent = fish.habitat;
+            fishDescription.textContent = fish.description;
+            fishDescription.removeAttribute('data-original');
+            fishDescription.classList.remove('corrupted-field');
+            renderFoodChain(fish.food_chain);
+            renderClues();
+            gameState.cluesRevealed = 1;
+            revealClueBtn.disabled = false;
+            revealClueBtn.textContent = '💡 REVEAL CLUE';
+            answerInput.value = '';
+            answerInput.disabled = false;
+            guessBtn.disabled = false;
+            nextFishBtn.classList.add('hidden');
+            aiExplainBtn.classList.add('hidden');
+            feedbackArea.classList.add('hidden');
+            feedbackArea.innerHTML = '';
+            gameState.isAnswerLocked = false;
+            fishEmojiContainer.classList.remove('fish-reveal');
+            void fishEmojiContainer.offsetWidth;
+            fishEmojiContainer.classList.add('fish-reveal');
+            updateReportTitle();
+            updateSpecimenBadge();
+            startTimer();
+        }
+
+        function renderClues() {
+            cluesContainer.innerHTML = '';
+            const fish = gameState.currentFish;
+            const visibleClues = fish.clues.slice(0, gameState.cluesRevealed);
+            const hiddenCount = MAX_CLUES - gameState.cluesRevealed;
+            visibleClues.forEach((clue, idx) => {
+                const clueEl = document.createElement('div');
+                clueEl.className = 'flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200 bg-cyan-50 dark:bg-slate-700/50 rounded-lg px-3 py-2 transition-all';
+                if (gameState.mode === 'anomaly' && idx > 0) {
+                    clueEl.classList.add('border-l-4', 'border-red-500/50');
+                } else {
+                    clueEl.classList.add('border-l-4', 'border-cyan-400');
+                }
+                const clueNum = document.createElement('span');
+                clueNum.className = 'font-bold text-xs text-slate-500 dark:text-slate-400 shrink-0';
+                clueNum.textContent = 'CLUE ' + (idx + 1) + ' //';
+                const clueText = document.createElement('span');
+                clueText.textContent = clue;
+                clueEl.appendChild(clueNum);
+                clueEl.appendChild(clueText);
+                cluesContainer.appendChild(clueEl);
+            });
+            if (hiddenCount > 0) {
+                const hiddenEl = document.createElement('div');
+                hiddenEl.className = 'text-xs text-slate-400 dark:text-slate-500 italic px-3 py-1';
+                hiddenEl.textContent = hiddenCount + ' more clue' + (hiddenCount > 1 ? 's' : '') + ' hidden...';
+                cluesContainer.appendChild(hiddenEl);
+            }
+            const revealCount = MAX_CLUES - gameState.cluesRevealed;
+            if (revealCount > 0) {
+                revealClueBtn.textContent = '💡 REVEAL CLUE (' + revealCount + ' left)';
+                revealClueBtn.disabled = false;
+            } else {
+                revealClueBtn.textContent = '💡 ALL CLUES REVEALED';
+                revealClueBtn.disabled = true;
+            }
+        }
+
+        function renderFoodChain(foodChainString) {
+            const chainItems = foodChainString.split('→').map(s => s.trim()).filter(Boolean);
+            const container = document.createElement('div');
+            container.className = 'flex flex-wrap items-center gap-1 md:gap-2 mt-2';
+            container.id = 'foodChainVisual';
+            chainItems.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className =
+                    'food-chain-card rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 text-center';
+                card.textContent = item;
+                container.appendChild(card);
+                if (idx < chainItems.length - 1) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'food-chain-arrow';
+                    arrow.textContent = '→';
+                    container.appendChild(arrow);
+                }
+            });
+        }
+
+        function updateReportTitle() {
+            if (gameState.mode === 'anomaly') {
+                reportTitle.textContent = '☠️ SPECIMEN RECORD — UNVERIFIED';
+                reportTitle.classList.add('glitch-text');
+            } else {
+                reportTitle.textContent = '🐟 AI FISH REPORT';
+                reportTitle.classList.remove('glitch-text');
+            }
+        }
+
+        function updateSpecimenBadge() {
+            if (gameState.mode === 'anomaly') {
+                specimenBadge.classList.remove('hidden');
+                specimenBadge.textContent = '⚠️ SIGNAL STABLE';
+                specimenBadge.classList.remove('anomaly-warning');
+            } else {
+                specimenBadge.classList.add('hidden');
+                specimenBadge.classList.remove('anomaly-warning');
+            }
+        }
+
+        // ==================== MODE SWITCHING ====================
+        function setMode(mode) {
+            gameState.mode = mode;
+            setStoredMode(mode);
+            if (mode === 'anomaly') {
+                body.classList.add('anomaly-active');
+                normalModeBtn.classList.remove('from-cyan-400', 'to-sky-500', 'text-white', 'shadow-lg',
+                    'shadow-cyan-200/50');
+                normalModeBtn.classList.add('bg-slate-100', 'text-slate-500', 'border', 'border-slate-300',
+                    'dark:bg-slate-800', 'dark:text-slate-400', 'dark:border-slate-600');
+                normalModeBtn.setAttribute('aria-selected', 'false');
+                anomalyModeBtn.classList.add('from-slate-700', 'to-slate-900', 'text-slate-300', 'border',
+                    'border-slate-500');
+                anomalyModeBtn.classList.remove('bg-slate-100', 'text-slate-500');
+                anomalyModeBtn.setAttribute('aria-selected', 'true');
+                tagline.textContent = 'Something is wrong with this specimen.';
+                scheduleAnomalyEvent();
+            } else {
+                body.classList.remove('anomaly-active');
+                anomalyModeBtn.classList.remove('from-slate-700', 'to-slate-900', 'text-slate-300', 'border',
+                    'border-slate-500');
+                anomalyModeBtn.classList.add('bg-slate-100', 'text-slate-500', 'border', 'border-slate-300',
+                    'dark:bg-slate-800', 'dark:text-slate-400', 'dark:border-slate-600');
+                anomalyModeBtn.setAttribute('aria-selected', 'false');
+                normalModeBtn.classList.add('from-cyan-400', 'to-sky-500', 'text-white', 'shadow-lg',
+                    'shadow-cyan-200/50');
+                normalModeBtn.classList.remove('bg-slate-100', 'text-slate-500', 'border', 'border-slate-300');
+                normalModeBtn.setAttribute('aria-selected', 'true');
+                tagline.textContent = 'Find the Fish. Break the Chain.';
+                if (gameState.anomalyEventTimeout) {
+                    clearTimeout(gameState.anomalyEventTimeout);
+                    gameState.anomalyEventTimeout = null;
+                }
+                gameState.anomalyEventActive = false;
+            }
+            stopTimer();
+            gameState.streak = 0;
+            updateStreakDisplay();
+            updateSidebar();
+        }
+
+        // ==================== AI GENERATION ====================
+        async function generateFishWithAI() {
+            const apiKey = getApiKey();
+            if (!apiKey) return null;
+            const systemPrompt = gameState.mode === 'normal' ?
+                "Generate one real fish species suitable for an educational guessing game. Give accurate but simple biological information. Do not reveal the fish's name in the description or clues. Generate three progressive clues. Return ONLY valid JSON with keys: name, emoji, weight, color, habitat, food_chain, description, clues (array of 3 strings)." :
+                "Generate one real fish species for an anomalous biological database game. Keep the underlying biological facts plausible, but present the information in a disturbing, corrupted, mysterious scientific-report style. Do not directly reveal the fish name. Return ONLY valid JSON with keys: name, emoji, weight, color, habitat, food_chain, description, clues (array of 3 strings).";
+            const userPrompt = gameState.mode === 'normal' ?
+                "Create a fresh fish profile. Make it educational and fun." :
+                "Create an anomalous specimen record. Make it unsettling but based on a real species.";
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+            try {
+                const res = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiKey,
+                    },
+                    body: JSON.stringify({
+                        model: GROQ_MODEL,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userPrompt },
+                        ],
+                        temperature: 0.8,
+                        max_tokens: 600,
+                        response_format: { type: 'json_object' },
+                    }),
+                    signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
+                if (!res.ok) throw new Error('API responded with status ' + res.status);
+                const json = await res.json();
+                const content = json?.choices?.[0]?.message?.content;
+                if (!content) throw new Error('No content in API response');
+                const parsed = extractJsonFromResponse(content);
+                if (!parsed || !isValidFishData(parsed)) throw new Error('Invalid fish data from API');
+                return normalizeFishData(parsed);
+            } catch (err) {
+                clearTimeout(timeoutId);
+                console.warn('AI generation failed, using fallback:', err.message || err);
+                return null;
+            }
+        }
+
+        async function generateFish() {
+            if (gameState.isAiGenerating) return;
+            gameState.isAiGenerating = true;
+            aiGeneratingOverlay.classList.remove('hidden');
+            aiGeneratingOverlay.classList.add('ai-thinking');
+            let fish = null;
+            const apiKey = getApiKey();
+            if (apiKey) {
+                fish = await generateFishWithAI();
+            }
+            if (!fish) {
+                fish = pickRandomLocalFish();
+            }
+            if (fish.name === gameState.currentFish?.name) {
+                fish = pickRandomLocalFish();
+            }
+            pushToFishHistory(fish.name);
+            aiGeneratingOverlay.classList.add('hidden');
+            aiGeneratingOverlay.classList.remove('ai-thinking');
+            gameState.isAiGenerating = false;
+            renderFish(fish);
+        }
+
+        async function explainFishWithAI() {
+            const apiKey = getApiKey();
+            const fish = gameState.currentFish;
+            if (!apiKey || !fish) return;
+            aiExplainBtn.disabled = true;
+            aiExplainBtn.textContent = '🤖 AI THINKING...';
+            const prompt =
+                `Explain in 2-3 short sentences why the fish is "${fish.name}". Mention the most important clue and an interesting biological fact. Keep it brief and casual.`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+            try {
+                const res = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiKey,
+                    },
+                    body: JSON.stringify({
+                        model: GROQ_MODEL,
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.6,
+                        max_tokens: 150,
+                    }),
+                    signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
+                if (!res.ok) throw new Error('API error');
+                const json = await res.json();
+                const content = json?.choices?.[0]?.message?.content;
+                if (content) {
+                    showFeedback('🤖 ' + content.trim(), 'info');
+                } else {
+                    throw new Error('No explanation');
+                }
+            } catch {
+                showFeedback('🤖 AI explain unavailable. Best clue: ' + (fish.clues[0] || 'No clues'), 'info');
+            } finally {
+                clearTimeout(timeoutId);
+                aiExplainBtn.disabled = false;
+                aiExplainBtn.textContent = '🤖 AI EXPLAIN';
+            }
+        }
+
+        // ==================== GAME ACTIONS ====================
+        function submitGuess() {
+            if (gameState.isAnswerLocked) return;
+            const guess = answerInput.value.trim().toLowerCase();
+            if (!guess) {
+                showFeedback('⚠️ Please type a fish name first!', 'info');
+                return;
+            }
+            stopTimer();
+            gameState.isAnswerLocked = true;
+            const fishName = gameState.currentFish.name.toLowerCase();
+            const isCorrect = guess === fishName || guess.includes(fishName) || fishName.includes(guess);
+            if (isCorrect) {
+                gameState.streak++;
+                checkBestStreak();
+                const scoreCalc = calculateScore(gameState.timer, gameState.cluesRevealed);
+                gameState.score += scoreCalc.total;
+                checkBestScore();
+                updateScoreDisplay(true);
+                updateStreakDisplay(true);
+                addDiscoveredFish(gameState.currentFish.name);
+                showCorrectMessage();
+                revealAnswer();
+                if (gameState.mode === 'anomaly') {
+                    triggerAnomalyEvent();
+                }
+            } else {
+                gameState.streak = 0;
+                updateStreakDisplay();
+                showWrongMessage();
+                revealAnswer();
+            }
+            guessBtn.disabled = true;
+            answerInput.disabled = true;
+            revealClueBtn.disabled = true;
+            nextFishBtn.classList.remove('hidden');
+            aiExplainBtn.classList.remove('hidden');
+            updateSidebar();
+        }
+
+        function revealHint() {
+            if (gameState.isAnswerLocked) return;
+            if (gameState.cluesRevealed < MAX_CLUES) {
+                gameState.cluesRevealed++;
+                renderClues();
+            }
+        }
+
+        function nextRound() {
+            gameState.round++;
+            updateRoundDisplay();
+            generateFish();
+        }
+
+        // ==================== API MODAL ====================
+        function openApiModal() {
+            apiModal.classList.remove('hidden');
+            apiModal.classList.add('flex');
+            if (getApiKey()) {
+                groqApiKeyInput.value = getApiKey();
+            }
+            groqApiKeyInput.focus();
+        }
+
+        function closeApiModal() {
+            apiModal.classList.add('hidden');
+            apiModal.classList.remove('flex');
+        }
+
+        function saveApiKey() {
+            const key = groqApiKeyInput.value.trim();
+            if (!key) {
+                alert('Please enter a valid Groq API key.');
+                return;
+            }
+            setApiKey(key);
+            updateAiStatusBadge();
+            closeApiModal();
+        }
+
+        function clearApiKeyAction() {
+            clearApiKey();
+            groqApiKeyInput.value = '';
+            updateAiStatusBadge();
+            closeApiModal();
+        }
+
+        function updateAiStatusBadge() {
+            const key = getApiKey();
+            if (key) {
+                aiStatusBadge.textContent = '🤖 AI MODE ENABLED';
+                aiStatusBadge.className =
+                    'text-xs mt-1 inline-block px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300';
+            } else {
+                aiStatusBadge.textContent = '📦 LOCAL GAME MODE (no API key)';
+                aiStatusBadge.className =
+                    'text-xs mt-1 inline-block px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        function initializeGame() {
+            gameState.discoveredFish = getDiscoveredFish();
+            gameState.mode = getStoredMode();
+            updateSidebar();
+            updateAiStatusBadge();
+            setMode(gameState.mode);
+            createBubbles();
+            window.addEventListener('resize', createBubbles);
+            updateRoundDisplay();
+            generateFish();
+            if (!getApiKey()) {
+                setTimeout(openApiModal, 600);
+            }
+        }
+
+        function loadProgress() {
+            gameState.discoveredFish = getDiscoveredFish();
+            gameState.mode = getStoredMode();
+        }
+
+        function saveProgress() {
+            setBestScore(Math.max(getBestScore(), gameState.score));
+            setBestStreak(Math.max(getBestStreak(), gameState.streak));
+            setDiscoveredFish(gameState.discoveredFish);
+            setStoredMode(gameState.mode);
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            normalModeBtn.addEventListener('click', () => {
+                if (gameState.mode !== 'normal') {
+                    setMode('normal');
+                    gameState.round = 1;
+                    updateRoundDisplay();
+                    generateFish();
+                }
+            });
+            anomalyModeBtn.addEventListener('click', () => {
+                if (gameState.mode !== 'anomaly') {
+                    setMode('anomaly');
+                    gameState.round = 1;
+                    updateRoundDisplay();
+                    generateFish();
+                }
+            });
+            guessBtn.addEventListener('click', submitGuess);
+            answerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitGuess();
+                }
+            });
+            revealClueBtn.addEventListener('click', revealHint);
+            nextFishBtn.addEventListener('click', nextRound);
+            aiExplainBtn.addEventListener('click', explainFishWithAI);
+            apiSettingsBtn.addEventListener('click', openApiModal);
+            saveApiKeyBtn.addEventListener('click', saveApiKey);
+            cancelApiKeyBtn.addEventListener('click', closeApiModal);
+            clearApiKeyBtn.addEventListener('click', clearApiKeyAction);
+            groqApiKeyInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') saveApiKey();
+                if (e.key === 'Escape') closeApiModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && apiModal.classList.contains('flex')) {
+                    closeApiModal();
+                }
+            });
+            apiModal.addEventListener('click', (e) => {
+                if (e.target === apiModal) closeApiModal();
+            });
+            window.addEventListener('beforeunload', saveProgress);
+        }
+
+        // ==================== START ====================
+        function start() {
+            loadProgress();
+            setupEventListeners();
+            initializeGame();
+        }
+
+        document.addEventListener('DOMContentLoaded', start);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', start);
+        } else {
+            start();
+        }
+    })();
+</script>
+</body>
+</html>
